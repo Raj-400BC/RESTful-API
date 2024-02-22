@@ -1,11 +1,21 @@
 import express from 'express';
+import mongoose from 'mongoose';
+import Order from "../models/order.mjs";
 
 const router = express.Router();
 
 router.get('/', (req ,res,next)=>{
-    res.status(200).json({
-        message : "welcome to orders section using GET request"
-    });
+   Order.find()
+   .select("product quantity _id")
+   .exec()
+   .then(result =>{
+    res.status(200).json(result)
+   })
+   .catch(err =>{
+    res.status(500).json({
+        error : err,
+    })
+   })
 })
 router.get('/:StatusID', (req ,res,next)=>{
     const id = req.params.StatusID;
@@ -24,14 +34,24 @@ router.get('/:StatusID', (req ,res,next)=>{
 
 
 router.post('/', (req ,res,next)=>{
-    const order = {
-        productID : req.body.productID,
-        quantity : req.body.quantity
-    }
-    res.status(200).json({
-        orderStatus : 'POST Method',
-        order : order
+    const order = new Order({
+        _id :new mongoose.Types.ObjectId(),
+        quantity : req.body.quantity,
+        product : req.body.productID
+    });
+    order
+    .save()
+    .then(result=>{
+        console.log(result);
+        res.status(201).json(result)
     })
+    .catch(err =>{
+        console.log(err);
+        res.status(500).json({
+            error : err
+        })
+    })
+     
 })
 
 export default router
