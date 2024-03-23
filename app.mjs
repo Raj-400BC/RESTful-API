@@ -8,13 +8,20 @@ const app = express();
 app.use(morgan('dev'))
 
 const uri = 'mongodb+srv://mayur1977be21:'+process.env.MONGO_ATLAS_PASSWORD+'@node-rest-shop.sykkypv.mongodb.net/?retryWrites=true&w=majority'
-main().catch(err => console.log(err));
+ main().catch(err => console.log(err));
 
 async function main() {
   await mongoose.connect(uri ,{
+    useNewUrlParser: true,
+  useUnifiedTopology: true,
+  serverSelectionTimeoutMS: 5000, 
   });
 }
-
+// await mongoose.connect(uri).then(()=>{
+//     console.log("conected");
+// }).catch((error)=>{
+//     console.log(error);
+// })
 app.use(express.json());
 app.use((req , res , next)=>{
     res.header("Access-Control-Allow-Origin" , "*");
